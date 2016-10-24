@@ -3,12 +3,14 @@ package com.example.rk.flickrclient.application;
 import android.app.Application;
 import android.util.Log;
 
+import com.googlecode.flickrjandroid.Flickr;
+
 /**
  * Created by RK on 10/20/2016.
  */
 public class FlickrClientApplication extends Application implements Thread.UncaughtExceptionHandler {
     private static final String TAG = FlickrClientApplication.class.getSimpleName();
-    private static FlickrClientApplication instance;
+    private static FlickrClientApplication instance = new FlickrClientApplication();
     private Thread.UncaughtExceptionHandler defaultUncaughtExceptionHandler;
 
     @Override
@@ -17,7 +19,6 @@ public class FlickrClientApplication extends Application implements Thread.Uncau
         defaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
 
-        instance = this;
     }
 
 
