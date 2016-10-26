@@ -100,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
 
     public PhotoList performRequest(final String query) {
 
-        Flickr flickr = new Flickr(apiKey, "bac6151a238ab0df");
         try {
+            Flickr flickr = FlickClient.getFlickrInstance();
             OAuthToken authToken = flickr.getOAuthInterface().getRequestToken("flickrClient://callback");
            URL url =  flickr.getOAuthInterface().buildAuthenticationUrl(Permission.WRITE, authToken);
             OAuth oAuth = flickr.getOAuthInterface().getAccessToken(authToken.getOauthToken(),authToken.getOauthTokenSecret(),null);
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
         searchParameters.setText(query);
         PhotoList photos = new PhotoList();
         try {
-            photos = flickr.getPhotosInterface().search(searchParameters, 100, 1);
+            photos = FlickClient.getFlickrInstance().getPhotosInterface().search(searchParameters, 100, 1);
             Log.d(TAG, photos.toString());
         } catch (IOException e) {
             e.printStackTrace();
