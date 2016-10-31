@@ -148,12 +148,4 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
-    private void retrievePhotos(PhotoList photos) {
-        Log.d(TAG,"retrieve photos");
-        for (Photo photo : photos) {
-            Picasso.with(this).load(photo.getMediumUrl());
-        }
-    }
-
 }
