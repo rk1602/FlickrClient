@@ -38,7 +38,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
 
     @Override
     public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Log.d(TAG,"on create view");
+        Log.d(TAG, "on create view");
         PhotoViewHolder viewHolder;
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View itemView = inflater.inflate(R.layout.itemview_layout, parent, false);
@@ -52,11 +52,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         //BitmapFactory.decodeStream(pho).
         holder.imageView.setBackgroundColor(context.getResources().getColor(R.color.abc_background_cache_hint_selector_material_dark));
         Picasso.with(context)
-                .load(photoUrl).resize(500,500).into(holder.imageView);
+                .load(photoUrl).resize(500, 500).into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context,PhotoDetailActivity.class);
+                Intent intent = new Intent(context, PhotoDetailActivity.class);
                 intent.putExtra("photo", photos.get(position));
 
                 context.startActivity(intent);
@@ -70,16 +70,8 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         return photos.size();
     }
 
-    public void setPhotoList(PhotoList photoList) {
-        photos.clear();
-        photos.addAll(photoList);
-        notifyDataSetChanged();
-
-    }
-
     static class PhotoViewHolder extends RecyclerView.ViewHolder {
-ImageView imageView;
-
+        ImageView imageView;
         PhotoViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             imageView = (ImageView) itemLayoutView.findViewById(R.id.ivPhoto);

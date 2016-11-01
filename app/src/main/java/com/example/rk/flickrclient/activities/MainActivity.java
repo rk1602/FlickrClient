@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     PhotoAdapter photoAdapter;
     PhotoList photoList = new PhotoList();
     ProgressBar progressBar;
+    int currentPage = 1;
+    int totalPages;
+    String query;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +55,24 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         photoAdapter = new PhotoAdapter(this, photoList);
         recyclerView.setAdapter(photoAdapter);
-        GridLayoutManager linearLayoutManager = new GridLayoutManager(this, 2);
+        final GridLayoutManager linearLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int firstItem = linearLayoutManager.findFirstVisibleItemPosition();
+                int lastItem = linearLayoutManager.findLastVisibleItemPosition();
+                if ((firstItem + lastItem) / 2 >= photoAdapter.getItemCount() - 75) {
+                    currentPage++;
+                    if (currentPage <= totalPages) {
+                        new FetchPhotosTask(query, currentPage).execute();
+                    }
+                }
+                Log.e(TAG, "first item" + String.valueOf(linearLayoutManager.findFirstVisibleItemPosition()));
+                Log.e(TAG, "last item" + String.valueOf(linearLayoutManager.findLastVisibleItemPosition()));
+            }
+        });
     }
 
     @Override
@@ -65,11 +84,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = intent.getStringExtra(SearchManager.QUERY);
+            currentPage = 1;
+            totalPages = 0;
             photoList.clear();
-            String query = intent.getStringExtra(SearchManager.QUERY);
             Log.d(TAG, query);
-            progressBar.setVisibility(View.VISIBLE);
-            new FetchPhotosTask().execute(query);
+            if (!query.isEmpty()) {
+                progressBar.setVisibility(View.VISIBLE);
+                new FetchPhotosTask(query, 1).execute();
+            }
         }
     }
 
@@ -98,25 +121,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public PhotoList performRequest(final String query) {
-
-        try {
-            Flickr flickr = FlickClient.getFlickrInstance();
-            OAuthToken authToken = flickr.getOAuthInterface().getRequestToken("flickrClient://callback");
-           URL url =  flickr.getOAuthInterface().buildAuthenticationUrl(Permission.WRITE, authToken);
-            OAuth oAuth = flickr.getOAuthInterface().getAccessToken(authToken.getOauthToken(),authToken.getOauthTokenSecret(),null);
-            Log.e(TAG,oAuth.toString());
-            Log.d(TAG,url.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FlickrException e) {
-            e.printStackTrace();
-        }
+    public PhotoList performRequest(final String query, int currentPage) {
         SearchParameters searchParameters = new SearchParameters();
         searchParameters.setText(query);
         PhotoList photos = new PhotoList();
         try {
-            photos = FlickClient.getFlickrInstance().getPhotosInterface().search(searchParameters, 100, 1);
+            photos = FlickClient.getFlickrInstance().getPhotosInterface().search(searchParameters, 100, currentPage);
+            totalPages = photos.getPages();
             Log.d(TAG, photos.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,11 +139,19 @@ public class MainActivity extends AppCompatActivity {
         return photos;
     }
 
-    class FetchPhotosTask extends AsyncTask<String, Void, PhotoList> {
+    class FetchPhotosTask extends AsyncTask<Void, Void, PhotoList> {
+
+        private final String query;
+        private final int currentPage;
+
+        FetchPhotosTask(String query, int currentPage) {
+            this.query = query;
+            this.currentPage = currentPage;
+        }
 
         @Override
-        protected PhotoList doInBackground(String... params) {
-            return performRequest(params[0]);
+        protected PhotoList doInBackground(Void... params) {
+            return performRequest(query, currentPage);
         }
 
         @Override
@@ -140,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(photos);
             Log.e(TAG, photos.toString());
             Log.e(TAG, String.valueOf(photos.getTotal()));
-           // retrievePhotos(photos);
             progressBar.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             photoList.addAll(photos);

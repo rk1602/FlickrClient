@@ -3,6 +3,7 @@ package com.example.rk.flickrclient.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -73,47 +74,24 @@ public class PhotoDetailActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         photo = (Photo) getIntent().getExtras().get("photo");
-        Picasso.with(getBaseContext()).load(photo.getMediumUrl()).resize(cardView.getWidth(), 1500).into(imageView);
+        Picasso.with(getBaseContext()).load(photo.getMediumUrl()).resize(cardView.getWidth(),1500).into(imageView);
         if (title != null) {
             title.setText(photo.getTitle());
         }
-//editText.setOnTouchListener(new View.OnTouchListener() {
-//    @Override
-//    public boolean onTouch(View v, MotionEvent event) {
-//        ke
-//        return false;
-//    }
-//});
-//        editText.setOnTouchListener(new View.OnTouchListener() {
-//
-//
-//                                        @Override
-//                                        public boolean onTouch(View v, MotionEvent motionEvent) {
-//                                            if (sharedPreferences.contains("accessToken") && sharedPreferences.contains("secretAccessToken")) {
-//                                                editText.setFocusableInTouchMode(true);
-//                                                editText.setFocusable(true);
-//                                            } else {
-//                                                addLoginDialog();
-//                                            }
-//                                            return false;
-//                                        }
-//                                    }
-//        );
-postButton.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        AddCommentTask addCommentTask = new AddCommentTask();
-        addCommentTask.execute();
-    }
-});
+        postButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddCommentTask addCommentTask = new AddCommentTask();
+                addCommentTask.execute();
+            }
+        });
         editText.setOnClickListener(new View.OnClickListener() {
-
-
                                         @Override
                                         public void onClick(View v) {
-                                            if (sharedPreferences.contains("result") ) {
+                                            if (sharedPreferences.contains("result")) {
                                                 editText.setFocusableInTouchMode(true);
                                                 editText.setFocusable(true);
+                                                postButton.setEnabled(true);
                                             } else {
                                                 addLoginDialog();
                                             }
@@ -122,16 +100,10 @@ postButton.setOnClickListener(new View.OnClickListener() {
         );
         PersonInfoTask personInfoTask = new PersonInfoTask();
         personInfoTask.execute(photo.getId());
-//        loginButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                startActivityForResult(new Intent(getBaseContext(), LoginActivity.class), 1);
-//            }
-//        });
     }
 
     private void addLoginDialog() {
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Light_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.alert_dialog, null);
         dialogBuilder.setView(dialogView);
@@ -186,7 +158,7 @@ postButton.setOnClickListener(new View.OnClickListener() {
         protected String doInBackground(Void... params) {
             String user = null;
             try {
-                OAuth oAuth = new Gson().fromJson(sharedPreferences.getString("result",null), OAuth.class);
+                OAuth oAuth = new Gson().fromJson(sharedPreferences.getString("result", null), OAuth.class);
                 RequestContext.getRequestContext().setOAuth(oAuth);
                 user = FlickClient.getFlickrInstance().getCommentsInterface().addComment(photo.getId(), editText.getText().toString());
             } catch (IOException e) {
@@ -206,9 +178,9 @@ postButton.setOnClickListener(new View.OnClickListener() {
             if (user != null) {
                 editText.clearFocus();
                 editText.setText(null);
-                Toast.makeText(getApplicationContext(), "Comment successfully posted.", Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), "Comment successfully posted.", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getApplicationContext(), "Comment cannot be posted due to server error.", Toast.LENGTH_SHORT);
+                Toast.makeText(getApplicationContext(), "Comment cannot be posted due to server error.", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -220,15 +192,10 @@ postButton.setOnClickListener(new View.OnClickListener() {
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 oauth = (OAuth) data.getExtras().get("result");
-//                sharedPreferences.edit().putString("accessToken", oauth.getToken().getOauthToken()).apply();
-//                sharedPreferences.edit().putString("secretAccessToken", oauth.getToken().getOauthTokenSecret()).apply();
-//                sharedPreferences.edit().putString("userId", oauth.getUser().getId()).apply();
-//sharedPreferences.edit().putString("userName", oauth.getUser().getUsername());
                 String jsonString = new Gson().toJson(oauth);
                 sharedPreferences.edit().putString("result", jsonString).apply();
-
+                postButton.setEnabled(true);
                 editText.setFocusable(true);
-
             }
         }
     }

@@ -23,101 +23,107 @@
             android:textColor="@color/primary_dark_material_dark"
             android:textSize="16sp"
             android:textStyle="bold" />
+
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="match_parent">
+
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-        <FrameLayout
-            android:id="@+id/imageLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <ProgressBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:indeterminate="true" />
+                <FrameLayout
+                    android:id="@+id/imageLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/photoDetail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/action_settings"
-                android:scaleType="centerCrop" />
-        </FrameLayout>
+                    <ProgressBar
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:indeterminate="true" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="bottom">
+                    <ImageView
+                        android:id="@+id/photoDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/action_settings"
+                        android:scaleType="centerCrop" />
+                </FrameLayout>
 
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp"
-                android:textColor="@color/primary_dark_material_dark"
-                android:textSize="13sp" />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="bottom">
 
-            <TextView
-                android:id="@+id/favs"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/title"
-                android:gravity="start"
-                android:paddingBottom="16dp"
-                android:paddingEnd="16dp"
-                android:paddingStart="8dp"
-                android:paddingTop="8dp"
-                android:textColor="@color/primary_dark_material_dark"
-                android:textSize="13sp" />
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingEnd="8dp"
+                        android:paddingStart="8dp"
+                        android:paddingTop="8dp"
+                        android:textColor="@color/primary_dark_material_dark"
+                        android:textSize="13sp" />
 
-            <TextView
-                android:id="@+id/comments"
-                android:textStyle="bold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/title"
-                android:layout_toEndOf="@+id/favs"
-                android:gravity="end"
-                android:paddingBottom="16dp"
-                android:paddingTop="8dp"
-                android:textColor="@color/primary_dark_material_dark"
-                android:textSize="13sp" />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_below="@id/favs"
-                >
-            <EditText
-                android:id="@+id/commentField"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColorHint="@color/dim_foreground_material_dark"
-                android:textColor="@color/primary_dark_material_dark"
-                android:paddingBottom="16dp"
-                android:paddingTop="8dp"
-                android:focusableInTouchMode="false"
-                android:focusable="false"
-                android:background="@drawable/abc_edit_text_material"
-                android:hint="Add a comment.." />
+                    <TextView
+                        android:id="@+id/favs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/title"
+                        android:gravity="start"
+                        android:paddingBottom="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingStart="8dp"
+                        android:paddingTop="8dp"
+                        android:textColor="@color/primary_dark_material_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/postButton"
-                    android:layout_gravity="end"
-                    android:text="POST"/>
-            </LinearLayout>
-        </RelativeLayout>
+                    <TextView
+                        android:id="@+id/comments"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/title"
+                        android:layout_toEndOf="@+id/favs"
+                        android:gravity="end"
+                        android:paddingBottom="16dp"
+                        android:paddingTop="8dp"
+                        android:textColor="@color/primary_dark_material_dark"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/favs"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/commentField"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/abc_edit_text_material"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:hint="Add a comment.."
+                            android:paddingBottom="16dp"
+                            android:paddingTop="8dp"
+                            android:textColor="@color/primary_dark_material_dark"
+                            android:textColorHint="@color/dim_foreground_material_dark" />
+
+                        <Button
+
+                            android:id="@+id/postButton"
+                            android:layout_width="wrap_content"
+                            android:enabled="false"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/commentField"
+                            android:text="Post" />
+                    </RelativeLayout>
+                </RelativeLayout>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
