@@ -34,6 +34,7 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.w3c.dom.Text;
 
+import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.util.Map;
 
@@ -67,14 +68,18 @@ public class PhotoDetailActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.photoDetail);
         editText = (EditText) findViewById(R.id.commentField);
         postButton = (Button) findViewById(R.id.postButton);
+
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
+        imageView.setMinimumHeight(1500);
+
         photo = (Photo) getIntent().getExtras().get("photo");
-        Picasso.with(getBaseContext()).load(photo.getMediumUrl()).resize(cardView.getWidth(),1500).into(imageView);
+
+        Picasso.with(getBaseContext()).load(photo.getMediumUrl()).fit().into(imageView);
         if (title != null) {
             title.setText(photo.getTitle());
         }
@@ -103,7 +108,7 @@ public class PhotoDetailActivity extends AppCompatActivity {
     }
 
     private void addLoginDialog() {
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this,R.style.Theme_AppCompat_Light_Dialog);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.alert_dialog, null);
         dialogBuilder.setView(dialogView);
@@ -144,6 +149,7 @@ public class PhotoDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Photo photo) {
             super.onPostExecute(photo);
+            Log.e("name",photo.getOwner().getRealName());
             user.setText(photo.getOwner().getRealName().toUpperCase());
             int favoritesCount = photo.getFavorites() == -1 ? 0 : photo.getFavorites();
             favs.setText(String.valueOf(favoritesCount) + " Favs");
@@ -194,8 +200,6 @@ public class PhotoDetailActivity extends AppCompatActivity {
                 oauth = (OAuth) data.getExtras().get("result");
                 String jsonString = new Gson().toJson(oauth);
                 sharedPreferences.edit().putString("result", jsonString).apply();
-                postButton.setEnabled(true);
-                editText.setFocusable(true);
             }
         }
     }

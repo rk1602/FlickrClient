@@ -2,9 +2,6 @@ package com.example.rk.flickrclient.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +11,6 @@ import android.widget.ImageView;
 
 import com.example.rk.flickrclient.R;
 import com.example.rk.flickrclient.activities.PhotoDetailActivity;
-import com.example.rk.flickrclient.application.FlickrClientApplication;
 import com.googlecode.flickrjandroid.photos.PhotoList;
 import com.squareup.picasso.Picasso;
 
@@ -31,6 +27,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     private PhotoList photos;
     private List<String> photoUrls = new ArrayList<>();
 
+
     public PhotoAdapter(Context context, PhotoList photoList) {
         this.photos = photoList;
         this.context = context;
@@ -42,7 +39,11 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         PhotoViewHolder viewHolder;
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View itemView = inflater.inflate(R.layout.itemview_layout, parent, false);
+        int parentHeight = parent.getMeasuredHeight();
+        int parentWeight = parent.getMeasuredWidth();
         viewHolder = new PhotoViewHolder(itemView);
+        itemView.findViewById(R.id.cardViewItem).setMinimumHeight(parentHeight /3);
+        itemView.findViewById(R.id.ivPhoto).setMinimumHeight(parentHeight /3);
         return viewHolder;
     }
 
@@ -52,7 +53,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         //BitmapFactory.decodeStream(pho).
         holder.imageView.setBackgroundColor(context.getResources().getColor(R.color.abc_background_cache_hint_selector_material_dark));
         Picasso.with(context)
-                .load(photoUrl).resize(500, 500).into(holder.imageView);
+                .load(photoUrl).fit().into(holder.imageView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

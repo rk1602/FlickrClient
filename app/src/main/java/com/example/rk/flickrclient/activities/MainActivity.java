@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     int currentPage = 1;
     int totalPages;
     String query;
+    boolean onGoing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +65,15 @@ public class MainActivity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
                 int firstItem = linearLayoutManager.findFirstVisibleItemPosition();
                 int lastItem = linearLayoutManager.findLastVisibleItemPosition();
-                if ((firstItem + lastItem) / 2 >= photoAdapter.getItemCount() - 75) {
+                if ((firstItem + lastItem) / 2 >= photoAdapter.getItemCount() - 75 && !onGoing) {
                     currentPage++;
+                    Log.e(TAG, " count " + photoAdapter.getItemCount() + " " + currentPage+" "+totalPages);
+
                     if (currentPage <= totalPages) {
                         new FetchPhotosTask(query, currentPage).execute();
                     }
                 }
-                Log.e(TAG, "first item" + String.valueOf(linearLayoutManager.findFirstVisibleItemPosition()));
-                Log.e(TAG, "last item" + String.valueOf(linearLayoutManager.findLastVisibleItemPosition()));
+
             }
         });
     }
@@ -88,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
             currentPage = 1;
             totalPages = 0;
             photoList.clear();
-            Log.d(TAG, query);
             if (!query.isEmpty()) {
                 progressBar.setVisibility(View.VISIBLE);
                 new FetchPhotosTask(query, 1).execute();
@@ -101,6 +103,23 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                photoList.clear();
+                totalPages = 0;
+                currentPage = 1;
+                query = "";
+                photoAdapter.notifyDataSetChanged();
+
+                return false;
+            }
+        });
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         return true;
@@ -129,11 +148,7 @@ public class MainActivity extends AppCompatActivity {
             photos = FlickClient.getFlickrInstance().getPhotosInterface().search(searchParameters, 100, currentPage);
             totalPages = photos.getPages();
             Log.d(TAG, photos.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FlickrException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (IOException | FlickrException | JSONException e) {
             e.printStackTrace();
         }
         return photos;
@@ -151,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected PhotoList doInBackground(Void... params) {
+            onGoing = true;
             return performRequest(query, currentPage);
         }
 
@@ -159,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(photos);
             Log.e(TAG, photos.toString());
             Log.e(TAG, String.valueOf(photos.getTotal()));
+            onGoing = false;
             progressBar.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             photoList.addAll(photos);
